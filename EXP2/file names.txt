@@ -1,0 +1,254 @@
+
+
+```bash
+cd ~/Labsetup/Files
+ls
+
+
+## Task 1 — Frequency Analysis
+
+الملفات المهمة:
+
+article.txt
+lowercase.txt
+plaintext.txt
+ciphertext.txt
+decrypted.txt
+freq.py
+
+
+وظيفة كل ملف:
+
+* `article.txt`: المقال الأصلي مع اسم Ola.
+* `lowercase.txt`: النص بعد تحويل الحروف إلى lowercase.
+* `plaintext.txt`: النص بعد حذف علامات الترقيم والأرقام.
+* `ciphertext.txt`: النص المشفّر باستخدام substitution cipher.
+* `decrypted.txt`: النص بعد استرجاعه.
+* `freq.py`: برنامج تحليل تكرار الحروف و2-gram و3-gram.
+
+
+
+
+## Task 2 — Different Ciphers and Modes
+
+الملف الأصلي:
+
+plain.txt
+
+
+الملفات المشفرة:
+
+
+cipher_cbc.bin
+cipher_cfb.bin
+cipher_3des.bin
+
+
+الملفات بعد فك التشفير:
+
+
+decrypted_cbc.txt
+decrypted_cfb.txt
+decrypted_3des.txt
+
+
+
+
+
+
+
+## Task 3 — ECB vs CBC Image
+
+ملفات الصورة:
+
+
+pic_original.bmp
+original.bmp
+ECB1.bmp
+CBC1.bmp
+header
+body_ecb
+body_cbc
+ECB_encrypted.bmp
+CBC_encrypted.bmp
+
+
+الأهم :
+
+original.bmp
+ECB_encrypted.bmp
+CBC_encrypted.bmp
+
+
+
+
+## Task 4 — Padding
+
+الملفات الأصلية:
+
+
+f1.txt
+f2.txt
+f3.txt
+
+
+أحجامها:
+
+
+f1.txt = 5 bytes
+f2.txt = 10 bytes
+f3.txt = 16 bytes
+
+
+لكل ملف توجد نسخ مشفرة بأربع Modes. مثال `f1`:
+
+
+f1_cbc.bin
+f1_ecb.bin
+f1_cfb.bin
+f1_ofb.bin
+
+
+ونفس النمط لـ`f2` و`f3`.
+
+ملفات فك التشفير مع ظهور Padding:
+
+
+f1_cbc_dec.txt
+f1_ecb_dec.txt
+f1_cfb_dec.txt
+f1_ofb_dec.txt
+
+f2_cbc_dec.txt
+f2_ecb_dec.txt
+f2_cfb_dec.txt
+f2_ofb_dec.txt
+
+f3_cbc_dec.txt
+f3_ecb_dec.txt
+f3_cfb_dec.txt
+f3_ofb_dec.txt
+```
+
+
+## Task 5 — Error Propagation
+
+الملف الأصلي الكبير:
+
+
+large.txt
+
+
+### ECB
+
+
+ecb.bin
+ecb_corrupt.bin
+ecb_decrypted_corrupt.txt
+
+
+### CBC
+
+
+cbc.bin
+cbc_corrupt.bin
+cbc_decrypted_corrupt.txt
+
+
+### CFB
+
+
+cfb.bin
+cfb_corrupt.bin
+cfb_decrypted_corrupt.txt
+
+
+### OFB
+
+
+ofb.bin
+ofb_corrupt.bin
+ofb_decrypted_corrupt.txt
+
+
+الملفات التي تحتوي كلمة `corrupt` هي التي غيّرنا فيها Bit واحد باستخدام Bless.
+
+
+
+## Task 6.1 — IV Experiment
+
+الرسالة الأصلية:
+
+
+message.txt
+
+
+نفس النص مع IV مختلفين:
+
+
+different1.bin
+different2.bin
+
+
+نفس النص مع نفس IV:
+
+
+same1.bin
+same2.bin
+
+
+
+
+إذا لم يعرض `cmp` أي شيء، فهذا يعني أن الملفين متطابقان.
+
+---
+
+## Task 6.2.1 — Reusing IV في OFB
+
+هذا الجزء **نظري** 
+Reusing the same key and IV in OFB produces the same keystream.
+Knowing one plaintext-ciphertext pair allows the attacker to recover
+the keystream and decrypt another ciphertext.
+
+
+
+## Task 6.2.2 — Predictable IV Attack
+
+
+1. تأكدي أن Docker شغال:
+
+```bash
+docker ps
+
+
+لازم يظهر Container قريب من:
+
+
+oracle-10.9.0.80
+
+
+2. شغّلي الهجوم:
+
+```bash
+nc 10.9.0.80 3000
+
+
+سيظهر:
+
+
+Bob's ciphertext
+The IV used
+Next IV
+Your plaintext
+
+
+هذا هو الجزء الذي استخدمنا فيه الـPredictable IV لمعرفة هل رسالة Bob هي `Yes` أو `No`. وتجربة المختبر أصلًا تطلب استخدام ملفات `Labsetup` وDocker لتنفيذ البيئة العملية. 
+
+
+
+
+## أسرع أمر يعرض الملفات مرتبة حسب كل Task
+
+```bash
+cd ~/Labsetup/Files
+ls -lh

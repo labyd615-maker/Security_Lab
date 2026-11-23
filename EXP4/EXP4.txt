@@ -1,0 +1,90 @@
+### **Task 1 Summary: Generating a MAC without Knowing the Secret Key**
+
+* **Goal:** Understand the basic mechanism of calculating and using a Message Authentication Code (MAC) to verify data integrity and authenticity on the server.
+* **Target Construction:** Uses direct concatenation: $\text{MAC} = \text{SHA256}(Key \mathbin{\Vert} Message)$.
+* **Executed Steps:**
+1. Calculated the legitimate MAC by concatenating the secret key with the message string (`myname=Ola&uid=1001&lstcmd=0&download=secret.txt`).
+2. Sent the valid HTTP request to the server using the `curl` command.
+
+
+* **Result:** The server successfully validated the MAC and returned the contents of `secret.txt`, confirming that requests with valid MACs are accepted.
+
+
+
+### **Task 2 Summary: Calculating Padding**
+
+* **Goal:** Calculate the exact SHA-256 padding bytes for the initial message ($Key \mathbin{\Vert} Message$) to prepare for the Length Extension Attack.
+* **Core Concept:** SHA-256 processes data in 64-byte blocks. Padding starts with a `0x80` byte, followed by zero bytes (`0x00`), and ends with the original message length in bits encoded as a 64-bit Big-endian integer.
+* **Result:** Extracted the URL-encoded padding (`%80%00...`) to append directly inside the attack HTTP request.
+
+---
+
+### **Concise Code Explanation**
+
+1. **`import struct`**: A library used to convert numerical values into raw binary byte representations.
+2. **`pad_len = (64 - (msg_len + 8) % 64) % 64`**: Calculates the required number of zero padding bytes while reserving 8 bytes at the end for the message length.
+3. **`if pad_len == 0: pad_len = 64`**: Adds a full new 64-byte block if the original message fills the block completely.
+4. **`bin_len = struct.pack('>Q', msg_len * 8)`**: Converts the total message length in bits into an 8-byte Big-endian unsigned integer.
+5. **`return b"\x80" + b"\x00" * (pad_len - 1) + bin_len`**: Constructs the final padding bytes (`0x80` + zeros + 8-byte length).
+6. **`pad = padding(len(msg))`**: Passes the combined length of (Secret Key + Original Message) to compute its exact padding.
+7. **`url_encoded_pad = "".join(...)`**: Formats each resulting padding byte into URL-encoded format (e.g., `%80%00`).
+
+
+**Task 3 Summary **
+
+Task 3 is about the **SHA-256 Length Extension Attack**.
+
+In this task, we use a weakness in a bad MAC design:
+
+```
+MAC = SHA256(secret + message)
+```
+
+The attacker knows the original message and its MAC, but does not know the secret key.
+
+The attack works by:
+
+1. Guessing the length of the secret key.
+2. Creating the correct SHA-256 padding (`0x80`, zeros, and message length).
+3. Using the old MAC as the internal SHA-256 state.
+4. Adding a new message (`&download=secret.txt`) without knowing the secret.
+5. Generating a new valid MAC.
+6. Sending the modified message and MAC to the server.
+
+If the guessed key length is correct, the server accepts the new MAC.
+
+The main lesson is:
+**SHA-256 alone should not be used as a MAC. Use HMAC-SHA256 because it prevents length extension attacks.**
+
+
+**Task 4 Summary:**
+
+Task 4 is about generating a secure **HMAC-SHA256**.
+
+The program uses:
+
+```text
+HMAC(key, message, SHA-256)
+
+
+to create a message authentication code (MAC).
+
+Steps:
+
+1. A secret key is chosen.
+2. A message is provided.
+3. HMAC-SHA256 uses the key and message to generate a MAC.
+4. The MAC is printed as a hexadecimal value.
+
+HMAC is more secure than using:
+
+```text
+SHA256(secret + message)
+```
+
+because it prevents **Length Extension Attacks**.
+
+The main idea:
+**HMAC-SHA256 protects the integrity and authenticity of messages by using a secret key with SHA-256.**
+
+
